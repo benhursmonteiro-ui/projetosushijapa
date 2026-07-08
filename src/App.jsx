@@ -15,7 +15,6 @@ import { Cardapio } from './views/Cardapio';
 import { Funcionarios } from './views/Funcionarios';
 import { Relatorios } from './views/Relatorios';
 import { Cozinha } from './views/Cozinha';
-import { Whatsapp } from './views/Whatsapp';
 import { QrCodeMenu } from './views/QrCodeMenu';
 import { Metas } from './views/Metas';
 import { Configuracoes } from './views/Configuracoes';
@@ -53,8 +52,7 @@ function MainApp() {
         return <Relatorios />;
       case 'cozinha':
         return <Cozinha />;
-      case 'whatsapp':
-        return <Whatsapp />;
+
       case 'qrcode':
         return <QrCodeMenu />;
       case 'metas':

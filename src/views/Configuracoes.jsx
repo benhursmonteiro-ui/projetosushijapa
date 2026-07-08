@@ -5,7 +5,6 @@ import {
   Trash2, 
   Check, 
   Building, 
-  MessageSquare, 
   ToggleLeft, 
   ToggleRight,
   ShieldAlert,
@@ -27,10 +26,7 @@ export const Configuracoes = () => {
   const [autoPrint, setAutoPrint] = useState(settings.autoPrintReceipts);
   const [sound, setSound] = useState(settings.soundNotifications);
 
-  // Whatsapp Templates
-  const [tplReceived, setTplReceived] = useState(settings.whatsappTemplates.received);
-  const [tplReady, setTplReady] = useState(settings.whatsappTemplates.ready);
-  const [tplDelivered, setTplDelivered] = useState(settings.whatsappTemplates.delivered);
+
 
   const [savedMessage, setSavedMessage] = useState(false);
 
@@ -44,12 +40,7 @@ export const Configuracoes = () => {
       deliveryFee: Number(fee),
       allowDiscounts: allowDisc,
       autoPrintReceipts: autoPrint,
-      soundNotifications: sound,
-      whatsappTemplates: {
-        received: tplReceived,
-        ready: tplReady,
-        delivered: tplDelivered
-      }
+      soundNotifications: sound
     });
 
     setSavedMessage(true);
@@ -176,49 +167,8 @@ export const Configuracoes = () => {
           </button>
         </div>
 
-        {/* Right: WhatsApp templates & System wipe actions */}
+        {/* Right: Danger Zone System actions */}
         <div className="space-y-6">
-          
-          {/* WhatsApp Autotemplates */}
-          <div className="bg-japaCard border border-japaCardLight rounded-xl p-5 space-y-4 shadow-lg">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-japaGold flex items-center gap-1.5 border-b border-japaCardLight pb-2.5">
-              <MessageSquare size={14} className="text-japaGold" />
-              Templates de Alertas WhatsApp
-            </h3>
-
-            <div className="space-y-3 text-xs">
-              <div className="space-y-0.5">
-                <label className="text-[8px] text-japaTextMuted uppercase font-bold block">1. Pedido Recebido (Cozinha)</label>
-                <textarea
-                  value={tplReceived}
-                  onChange={(e) => setTplReceived(e.target.value)}
-                  rows={2}
-                  className="w-full bg-japaBg border border-japaCardLight text-white p-2 rounded-lg text-[11px] resize-none focus:outline-none"
-                />
-              </div>
-              <div className="space-y-0.5">
-                <label className="text-[8px] text-japaTextMuted uppercase font-bold block">2. Pedido Pronto (Despachado)</label>
-                <textarea
-                  value={tplReady}
-                  onChange={(e) => setTplReady(e.target.value)}
-                  rows={2}
-                  className="w-full bg-japaBg border border-japaCardLight text-white p-2 rounded-lg text-[11px] resize-none focus:outline-none"
-                />
-              </div>
-              <div className="space-y-0.5">
-                <label className="text-[8px] text-japaTextMuted uppercase font-bold block">3. Pedido Concluído (Fidelização)</label>
-                <textarea
-                  value={tplDelivered}
-                  onChange={(e) => setTplDelivered(e.target.value)}
-                  rows={2}
-                  className="w-full bg-japaBg border border-japaCardLight text-white p-2 rounded-lg text-[11px] resize-none focus:outline-none"
-                />
-              </div>
-              <span className="text-[9px] text-japaTextMuted leading-relaxed block italic">
-                Tags de suporte automático: {'{cliente}'} (Nome) e {'{id}'} (Código Pedido).
-              </span>
-            </div>
-          </div>
 
           {/* Master Reset system data */}
           <div className="bg-japaCard border border-japaRed/10 rounded-xl p-5 space-y-4 shadow-lg">

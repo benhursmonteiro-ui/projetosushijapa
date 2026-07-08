@@ -38,7 +38,6 @@ export const Sidebar = ({ currentView, setCurrentView }) => {
     { id: 'relatorios', label: 'Relatórios', icon: BarChart3, roles: ['Sócio', 'Gerente'] },
     { id: 'financeiro', label: 'Financeiro Geral', icon: DollarSign, roles: ['Sócio'] },
     { id: 'cozinha', label: 'Painel Cozinha', icon: ChefHat, roles: ['Sócio', 'Gerente', 'Cozinha'] },
-    { id: 'whatsapp', label: 'WhatsApp', icon: MessageSquare, roles: ['Sócio', 'Gerente'] },
     { id: 'qrcode', label: 'Cardápio Digital', icon: QrCode, roles: ['Sócio', 'Gerente', 'Caixa', 'Cliente'] },
     { id: 'metas', label: 'Metas & Indicadores', icon: Target, roles: ['Sócio', 'Gerente'] },
     { id: 'configuracoes', label: 'Configurações', icon: Settings, roles: ['Sócio'] }

@@ -14,6 +14,10 @@ CREATE TABLE IF NOT EXISTS users (
   is_partner BOOLEAN DEFAULT false
 );
 
+-- Garantir que colunas novas existam caso a tabela já tenha sido criada anteriormente
+ALTER TABLE users ADD COLUMN IF NOT EXISTS partner_id TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_partner BOOLEAN DEFAULT false;
+
 -- 2. TABELA DE SÓCIOS
 CREATE TABLE IF NOT EXISTS partners (
   id TEXT PRIMARY KEY,
@@ -200,15 +204,15 @@ CREATE TABLE IF NOT EXISTS audit_log (
 
 -- Popular Usuários
 INSERT INTO users (id, username, password, name, role, partner_id, is_partner) VALUES
-('u-1', 'admin', 'japa2026', 'Benhur', 'Sócio', 'p-1', true),
-('u-2', 'socio2', 'japa2026', 'Sócio 2', 'Sócio', 'p-2', true),
-('u-3', 'socio3', 'japa2026', 'Sócio 3', 'Sócio', 'p-3', true),
-('u-4', 'socio4', 'japa2026', 'Sócio 4', 'Sócio', 'p-4', true),
-('u-5', 'gerente', 'gerente123', 'Lucas Lima', 'Gerente', NULL, false),
-('u-6', 'caixa', 'caixa123', 'Maria Oliveira', 'Caixa', NULL, false),
-('u-7', 'cozinha', 'cozinha123', 'Pedro Santos', 'Cozinha', NULL, false),
-('u-8', 'entregador', 'moto123', 'João Silva', 'Entregador', NULL, false),
-('u-9', 'cliente', 'cliente123', 'Cliente Simulador', 'Cliente', NULL, false)
+('u-1', 'admin', '$2a$10$WHjltCgOhhBo/hhiefZOKe0p23F.r7XnfesF2Ofl7OgzI46HIoWw.', 'Benhur', 'Sócio', 'p-1', true),
+('u-2', 'socio2', '$2a$10$WHjltCgOhhBo/hhiefZOKe0p23F.r7XnfesF2Ofl7OgzI46HIoWw.', 'Sócio 2', 'Sócio', 'p-2', true),
+('u-3', 'socio3', '$2a$10$WHjltCgOhhBo/hhiefZOKe0p23F.r7XnfesF2Ofl7OgzI46HIoWw.', 'Sócio 3', 'Sócio', 'p-3', true),
+('u-4', 'socio4', '$2a$10$WHjltCgOhhBo/hhiefZOKe0p23F.r7XnfesF2Ofl7OgzI46HIoWw.', 'Sócio 4', 'Sócio', 'p-4', true),
+('u-5', 'gerente', '$2a$10$iN9DOTPRC4GWp6N3PGR2kub4rdDxHyl.2RGQ91LTupSQWtD9ynjte', 'Lucas Lima', 'Gerente', NULL, false),
+('u-6', 'caixa', '$2a$10$LaiNN/lH9OhC3g2ORU8ZmOW1O31oBm1Jz3nzIW30OjH6Hcuv9oR9C', 'Maria Oliveira', 'Caixa', NULL, false),
+('u-7', 'cozinha', '$2a$10$NRcIoQZLpVbxFBI0ikkWnObfiWKZoKpDlpGtn5ekKXj1pJ5caXr5i', 'Pedro Santos', 'Cozinha', NULL, false),
+('u-8', 'entregador', '$2a$10$pgNsgdqDsTsj/IkI5njvRO5d3yr5SCLAa2QYlGa6m3lGf78qjtkFu', 'João Silva', 'Entregador', NULL, false),
+('u-9', 'cliente', '$2a$10$zoknO7x0lCQcph6wnLQbk.7XpB7Fb2L9bmfqjmJj02qf0euCE1X0q', 'Cliente Simulador', 'Cliente', NULL, false)
 ON CONFLICT (id) DO NOTHING;
 
 -- Popular Sócios
