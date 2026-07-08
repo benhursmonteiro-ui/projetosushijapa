@@ -23,7 +23,17 @@ router.post('/login', async (req, res) => {
     }
 
     const user = result.rows[0];
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    let passwordMatch = false;
+    try {
+      passwordMatch = await bcrypt.compare(password, user.password);
+    } catch (e) {
+      passwordMatch = false;
+    }
+
+    // Fallback de compatibilidade para senhas antigas em texto plano no banco de dados
+    if (!passwordMatch && password === user.password) {
+      passwordMatch = true;
+    }
 
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Usuário ou senha incorretos.' });
