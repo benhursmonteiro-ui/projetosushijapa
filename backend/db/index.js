@@ -17,7 +17,7 @@ if (!connectionString || connectionString.includes('sua-senha-aqui')) {
 
 const pool = new Pool({
   connectionString,
-  ssl: isProduction ? { rejectUnauthorized: false } : false
+  ssl: { rejectUnauthorized: false }
 });
 
 pool.on('error', (err) => {

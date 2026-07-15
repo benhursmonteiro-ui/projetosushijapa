@@ -19,13 +19,19 @@ const app = express();
 const server = http.createServer(app);
 
 // Configuração CORS dinâmica para produção e desenvolvimento local
+const isProduction = process.env.NODE_ENV === 'production';
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
   ? process.env.ALLOWED_ORIGINS.split(',') 
   : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Permite requisições sem origem (como aplicativos móveis ou requisições locais/cURL)
+    // Em desenvolvimento, permite qualquer origem
+    if (!isProduction) {
+      callback(null, true);
+      return;
+    }
+    // Em produção, verifica a lista de origens permitidas
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -35,10 +41,10 @@ const corsOptions = {
   credentials: true
 };
 
-// Configuração do Socket.io com suporte a CORS restrito
+// Configuração do Socket.io com suporte a CORS
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: isProduction ? allowedOrigins : true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   }

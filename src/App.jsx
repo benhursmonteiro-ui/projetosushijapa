@@ -23,6 +23,7 @@ import { Financeiro } from './views/Financeiro';
 function MainApp() {
   const { currentUser } = useContext(AppContext);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // If no user is logged in, force Login screen
   if (!currentUser) {
@@ -69,12 +70,20 @@ function MainApp() {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-japaBg font-sans antialiased text-japaText">
       {/* Sidebar Navigation (Left) */}
-      <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
+      <Sidebar 
+        currentView={currentView} 
+        setCurrentView={setCurrentView} 
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
       {/* Main Layout Area (Right) */}
-      <div className="flex flex-col flex-1 h-full overflow-hidden">
+      <div className="flex flex-col flex-1 h-full overflow-hidden min-w-0">
         {/* Header Top Bar */}
-        <Header />
+        <Header 
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
 
         {/* View Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-japaBg">

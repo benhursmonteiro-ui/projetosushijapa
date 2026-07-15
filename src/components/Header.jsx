@@ -9,10 +9,11 @@ import {
   DollarSign, 
   ArrowUpRight, 
   ArrowDownLeft,
-  X
+  X,
+  Menu
 } from 'lucide-react';
 
-export const Header = () => {
+export const Header = ({ sidebarOpen, setSidebarOpen }) => {
   const { 
     cashier, 
     inventory, 
@@ -61,16 +62,24 @@ export const Header = () => {
   });
 
   return (
-    <header className="h-16 border-b border-japaCardLight bg-japaBg px-6 flex items-center justify-between sticky top-0 z-10">
-      {/* Date and Time */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2 text-xs text-japaTextMuted">
-          <Calendar size={14} className="text-japaGold" />
-          <span className="capitalize">{formattedDate}</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-japaTextMuted">
-          <Clock size={14} className="text-japaGold animate-soft-pulse" />
-          <span>{time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+    <header className="h-16 border-b border-japaCardLight bg-japaBg px-4 md:px-6 flex items-center justify-between sticky top-0 z-10 shrink-0 min-w-0 overflow-x-auto">
+      {/* Menu Mobile & Date and Time */}
+      <div className="flex items-center gap-4 shrink-0">
+        <button 
+          onClick={() => setSidebarOpen(true)}
+          className="md:hidden p-2 text-japaTextMuted hover:text-white hover:bg-japaCardLight/40 rounded-lg transition-colors"
+        >
+          <Menu size={20} />
+        </button>
+        <div className="hidden sm:flex items-center gap-6">
+          <div className="flex items-center gap-2 text-xs text-japaTextMuted">
+            <Calendar size={14} className="text-japaGold shrink-0" />
+            <span className="capitalize whitespace-nowrap">{formattedDate}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-japaTextMuted">
+            <Clock size={14} className="text-japaGold animate-soft-pulse shrink-0" />
+            <span className="whitespace-nowrap">{time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+          </div>
         </div>
       </div>
 

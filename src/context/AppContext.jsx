@@ -211,22 +211,30 @@ export const AppProvider = ({ children }) => {
         body: JSON.stringify({ username, password })
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        return { success: false, error: err.error || 'Usuário ou senha incorretos.' };
+      // Tenta ler o corpo da resposta com segurança
+      let data;
+      try {
+        const text = await res.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseErr) {
+        console.error('Erro ao ler resposta do servidor:', parseErr);
+        return { success: false, error: 'Servidor retornou uma resposta inválida.' };
       }
 
-      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Usuário ou senha incorretos.' };
+      }
+
       localStorage.setItem('japa_token', data.token);
       setCurrentUser(data.user);
-      
+
       // Carregar todos os dados do sistema após login
       setTimeout(() => fetchData(), 50);
 
       return { success: true, user: data.user };
     } catch (err) {
       console.error(err);
-      return { success: false, error: 'Erro ao autenticar no servidor.' };
+      return { success: false, error: 'Erro ao autenticar no servidor. Verifique se o backend está rodando.' };
     }
   };
 
@@ -385,11 +393,11 @@ export const AppProvider = ({ children }) => {
   const closeCashier = async (actualCash, actualPix, actualDebit, actualCredit, actualIfood) => {
     const salesBreakdown = calculateSalesTotal();
     const suprimentosTotal = cashier.transactions.filter(t => t.type === 'suprimento').reduce((s, t) => s + t.amount, 0);
-    const sangriasTotal    = cashier.transactions.filter(t => t.type === 'sangria').reduce((s, t) => s + t.amount, 0);
-    const expectedCash     = salesBreakdown.dinheiro + cashier.initialBalance + suprimentosTotal - sangriasTotal;
-    const actualTotal      = Number(actualCash) + Number(actualPix) + Number(actualDebit) + Number(actualCredit) + Number(actualIfood);
-    const expectedTotal    = expectedCash + salesBreakdown.pix + salesBreakdown.debit + salesBreakdown.credit + salesBreakdown.ifood;
-    const difference       = actualTotal - expectedTotal;
+    const sangriasTotal = cashier.transactions.filter(t => t.type === 'sangria').reduce((s, t) => s + t.amount, 0);
+    const expectedCash = salesBreakdown.dinheiro + cashier.initialBalance + suprimentosTotal - sangriasTotal;
+    const actualTotal = Number(actualCash) + Number(actualPix) + Number(actualDebit) + Number(actualCredit) + Number(actualIfood);
+    const expectedTotal = expectedCash + salesBreakdown.pix + salesBreakdown.debit + salesBreakdown.credit + salesBreakdown.ifood;
+    const difference = actualTotal - expectedTotal;
 
     const closeLog = {
       closedAt: new Date().toLocaleString('pt-BR'),
