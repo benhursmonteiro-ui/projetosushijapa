@@ -370,51 +370,32 @@ router.post('/reset', authMiddleware, requireRole(['Sócio']), async (req, res) 
     // 2. Restaurar dados padrões nas tabelas de registro único (id=1)
     await db.query(`
       UPDATE cashier SET 
-        is_open = true, 
-        opened_by = 'Benhur', 
-        opened_at = '2026-06-01 17:00', 
-        initial_balance = 500.00, 
-        transactions = '[{"type": "suprimento", "amount": 100.00, "reason": "Troco inicial extra", "time": "17:30", "user": "Benhur"}, {"type": "sangria", "amount": 50.00, "reason": "Compra de gelo emergencial", "time": "19:00", "user": "Benhur"}]'::jsonb
+        is_open = false, 
+        opened_by = NULL, 
+        opened_at = NULL, 
+        initial_balance = 0.00, 
+        transactions = '[]'::jsonb
       WHERE id = 1
     `);
 
     await db.query(`
       UPDATE goals SET 
-        daily_target = 10000.00, 
-        history = '[{"date": "2026-05-31", "target": 8000.00, "total": 7450.00, "percent": 93}, {"date": "2026-05-30", "target": 8000.00, "total": 9850.00, "percent": 123}, {"date": "2026-05-29", "target": 8000.00, "total": 8200.00, "percent": 102.5}, {"date": "2026-05-28", "target": 8000.00, "total": 7500.00, "percent": 93.7}, {"date": "2026-05-27", "target": 8000.00, "total": 9100.00, "percent": 113.7}]'::jsonb
+        daily_target = 0.00, 
+        history = '[]'::jsonb
       WHERE id = 1
     `);
 
-    await db.query(`
-      UPDATE settings SET 
-        restaurant_name = 'Sushi Japa Food Prime',
-        cnpj = '12.345.678/0001-90',
-        phone = '(11) 98765-4321',
-        address = 'Av. Paulista, 1000 - Bela Vista - São Paulo/SP',
-        delivery_fee = 7.00,
-        logo_url = '',
-        allow_discounts = true,
-        auto_print_receipts = false,
-        sound_notifications = true,
-        auto_backup = true,
-        whatsapp_templates = '{"received": "Olá *{cliente}*! Recebemos seu pedido *#{id}*. Já está em preparação em nossa cozinha! 🍣", "ready": "Olá *{cliente}*! Boas notícias: seu pedido *#{id}* ficou pronto! 🛵", "delivered": "Olá *{cliente}*! Seu pedido *#{id}* foi finalizado. Agradecemos a preferência! 🙏"}'::jsonb
-      WHERE id = 1
-    `);
+    // Manter as configurações (settings) atuais, apenas garantindo que existam.
+    // Pode-se limpar os templates se desejado, mas geralmente não são vistos como 'exemplos' e sim configuração.
 
     // 3. Resetar mesas para o estado padrão
     const defaultTables = Array.from({ length: 12 }, (_, i) => ({
       id: `mesa-${i + 1}`,
       number: String(i + 1).padStart(2, '0'),
-      status: i === 2 ? 'Ocupada' : i === 4 ? 'Conta Solicitada' : 'Livre',
-      items: i === 2 ? [
-        { id: 'prod-2', name: 'Hot Filadélfia (10pcs)', price: 37.90, quantity: 2 },
-        { id: 'prod-6', name: 'Guaraná Antarctica', price: 6.00, quantity: 1 }
-      ] : i === 4 ? [
-        { id: 'prod-1', name: 'Combo Japa Prime', price: 89.90, quantity: 1 },
-        { id: 'prod-7', name: 'Água Mineral', price: 4.50, quantity: 1 }
-      ] : [],
-      openedAt: i === 2 ? '19:40' : i === 4 ? '19:10' : null,
-      waiterId: i === 2 ? 'emp-4' : i === 4 ? 'emp-4' : null
+      status: 'Livre',
+      items: [],
+      openedAt: null,
+      waiterId: null
     }));
 
     for (const t of defaultTables) {
@@ -424,41 +405,11 @@ router.post('/reset', authMiddleware, requireRole(['Sócio']), async (req, res) 
       );
     }
 
-    // 4. Resetar também o estoque e funcionários para os originais (opcional, mas bom manter coerência)
+    // 4. Limpar as tabelas de cadastros (deixando o sistema virgem)
+    // ATENÇÃO: Usuários e Sócios (users/partners) NÃO são apagados para não perder o acesso ao sistema.
     await db.query('DELETE FROM inventory');
-    await db.query("INSERT INTO inventory (id, name, qty, min, unit, category) VALUES \
-      ('ing-1', 'Salmão', 15.5, 5.0, 'kg', 'Peixes'), \
-      ('ing-2', 'Arroz Sushi', 20.0, 8.0, 'kg', 'Grãos'), \
-      ('ing-3', 'Alga Nori', 120, 30, 'un', 'Outros'), \
-      ('ing-4', 'Cream Cheese', 45, 10, 'un', 'Laticínios'), \
-      ('ing-5', 'Skin de Salmão', 4.0, 1.0, 'kg', 'Peixes'), \
-      ('ing-6', 'Macarrão Yakisoba', 12.0, 3.0, 'kg', 'Massas'), \
-      ('ing-7', 'Frango', 10.0, 3.0, 'kg', 'Carnes'), \
-      ('ing-8', 'Legumes Mistos', 8.0, 2.0, 'kg', 'Vegetais'), \
-      ('ing-9', 'Guaraná Lata', 80, 20, 'un', 'Bebidas'), \
-      ('ing-10', 'Água Mineral', 50, 15, 'un', 'Bebidas') \
-      ON CONFLICT (id) DO NOTHING");
-
     await db.query('DELETE FROM employees');
-    await db.query("INSERT INTO employees (id, name, role, phone, status, commission, sales_count) VALUES \
-      ('emp-1', 'João Silva', 'Motoboy', '(11) 99999-1111', 'Ativo', 85.00, 12), \
-      ('emp-2', 'Maria Oliveira', 'Caixa', '(11) 98888-2222', 'Ativo', 0.00, 0), \
-      ('emp-3', 'Pedro Santos', 'Cozinheiro', '(11) 97777-3333', 'Ativo', 0.00, 0), \
-      ('emp-4', 'Ana Costa', 'Atendente', '(11) 96666-4444', 'Ativo', 25.00, 5), \
-      ('emp-5', 'Lucas Lima', 'Gerente', '(11) 95555-5555', 'Férias', 0.00, 0) \
-      ON CONFLICT (id) DO NOTHING");
-
-    // Recriar ordens iniciais para exibição de relatórios/faturamento no dashboard
-    await db.query("INSERT INTO orders (id, customer_name, phone, address, channel, type, status, payment_method, items, subtotal, delivery_fee, total, time, date, waiter_id) VALUES \
-      ('1253', 'Juliana Alves', '', '', 'Balcão', 'Mesa', 'Finalizado', 'Dinheiro', '[{\"id\": \"prod-1\", \"name\": \"Combo Japa Prime\", \"price\": 89.90, \"quantity\": 1}, {\"id\": \"prod-7\", \"name\": \"Água Mineral\", \"price\": 4.50, \"quantity\": 2}]'::jsonb, 98.90, 0.00, 98.90, '19:15', '2026-06-01', 'emp-4'), \
-      ('1254', 'Lucas Lima', '(11) 95432-1098', 'Rua Japar, 250', 'WhatsApp', 'Retirada', 'Preparando', 'Pix', '[{\"id\": \"prod-2\", \"name\": \"Hot Filadélfia (10pcs)\", \"price\": 37.90, \"quantity\": 2}]'::jsonb, 75.80, 0.00, 75.80, '20:30', '2026-06-01', NULL), \
-      ('1255', 'Ana Paula', '', '', 'Balcão', 'Balcão', 'Pronto', 'Débito', '[{\"id\": \"prod-5\", \"name\": \"Yakisoba Frango\", \"price\": 45.00, \"quantity\": 1}]'::jsonb, 45.00, 0.00, 45.00, '20:45', '2026-06-01', NULL), \
-      ('1256', 'Pedro Santos', '(11) 96543-2109', 'Rua Acácio, 789', 'WhatsApp', 'Delivery', 'Em entrega', 'Crédito', '[{\"id\": \"prod-1\", \"name\": \"Combo Japa Prime\", \"price\": 89.90, \"quantity\": 1}, {\"id\": \"prod-3\", \"name\": \"Temaki Salmão\", \"price\": 38.00, \"quantity\": 1}]'::jsonb, 127.90, 7.00, 134.90, '21:05', '2026-06-01', NULL), \
-      ('1257', 'Marta Oliveira', '(11) 97654-3210', 'Rua das Flores, 123', 'WhatsApp', 'Delivery', 'Preparando', 'Pix', '[{\"id\": \"prod-2\", \"name\": \"Hot Filadélfia (10pcs)\", \"price\": 37.90, \"quantity\": 1}, {\"id\": \"prod-6\", \"name\": \"Guaraná Antarctica\", \"price\": 6.00, \"quantity\": 1}]'::jsonb, 43.90, 7.00, 50.90, '21:20', '2026-06-01', NULL), \
-      ('1258', 'Julio Silva', '(11) 98765-4321', 'Av. Paulista, 1000 - Apto 42', 'iFood', 'Delivery', 'Em entrega', 'iFood', '[{\"id\": \"prod-1\", \"name\": \"Combo Japa Prime\", \"price\": 89.90, \"quantity\": 1}]'::jsonb, 89.90, 7.00, 96.90, '21:30', '2026-06-01', NULL), \
-      ('1259', 'Mesa 08', '', '', 'Balcão', 'Mesa', 'Preparando', 'Crédito', '[{\"id\": \"prod-5\", \"name\": \"Yakisoba Frango\", \"price\": 45.00, \"quantity\": 1}, {\"id\": \"prod-7\", \"name\": \"Água Mineral\", \"price\": 4.50, \"quantity\": 1}]'::jsonb, 49.50, 0.00, 49.50, '21:32', '2026-06-01', 'emp-4'), \
-      ('1260', 'Rodrigo Santos', '(11) 98888-7777', 'Rua das Palmeiras, 450', 'iFood', 'Delivery', 'Preparando', 'iFood', '[{\"id\": \"prod-2\", \"name\": \"Hot Filadélfia (10pcs)\", \"price\": 37.90, \"quantity\": 2}, {\"id\": \"prod-6\", \"name\": \"Guaraná Antarctica\", \"price\": 6.00, \"quantity\": 2}]'::jsonb, 87.80, 7.00, 94.80, '21:35', '2026-06-01', NULL), \
-      ('1261', 'Mesa 03', '', '', 'Balcão', 'Mesa', 'Preparando', 'Pix', '[{\"id\": \"prod-1\", \"name\": \"Combo Japa Prime\", \"price\": 89.90, \"quantity\": 1}, {\"id\": \"prod-3\", \"name\": \"Temaki Salmão\", \"price\": 38.00, \"quantity\": 2}]'::jsonb, 165.90, 0.00, 165.90, '21:40', '2026-06-01', 'emp-4')");
+    await db.query('DELETE FROM menu');
 
     const io = req.app.get('io');
     if (io) {

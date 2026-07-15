@@ -51,7 +51,7 @@ export const Configuracoes = () => {
     const doubleCheck = window.confirm('ATENÇÃO: Deseja redefinir todo o banco de dados do sistema? Todos os novos pedidos, comandas, movimentações de caixa e insumos cadastrados serão apagados permanentemente.');
     if (doubleCheck) {
       resetAllData();
-      alert('Sistema restaurado aos dados de demonstração com sucesso!');
+      alert('Sistema limpo com sucesso! O banco de dados agora está virgem.');
       window.location.reload();
     }
   };
@@ -178,7 +178,7 @@ export const Configuracoes = () => {
             </h3>
             
             <p className="text-[11px] text-japaTextMuted leading-relaxed">
-              Deseja zerar os relatórios de faturamento diário, comandas em aberto ou estoque para restaurar o sistema inicial do MVP?
+              Deseja zerar todos os relatórios de faturamento diário, comandas, estoque e cardápio, deixando o sistema completamente limpo (virgem)?
             </p>
 
             <button
@@ -187,7 +187,7 @@ export const Configuracoes = () => {
               className="w-full bg-japaRed/10 hover:bg-japaRed text-japaRed hover:text-white border border-japaRed/30 py-2.5 rounded-lg text-xs font-extrabold uppercase transition-all flex items-center justify-center gap-1.5"
             >
               <Database size={14} />
-              Resetar Banco de Dados Local
+              Deixar Sistema Virgem
             </button>
           </div>
 
